@@ -37,7 +37,7 @@ module Arel # :nodoc: all
         end
 
         def visit_Arel_Nodes_HomogeneousIn(o, collector)
-          if o.type == :in && o.attribute.type_caster.is_a?(ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Point)
+          if o.type == :in && o.attribute.type_caster.type == :point
             collector.preparable = false
 
             collector << quote_table_name(o.table_name) << "." << quote_column_name(o.column_name) << " ~= "
@@ -57,7 +57,7 @@ module Arel # :nodoc: all
 
         def visit_Arel_Nodes_Equality(o, collector)
           left = o.left
-          if left.try(:able_to_type_cast?) && left.type_caster.is_a?(ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Point)
+          if left.try(:able_to_type_cast?) && left.type_caster.type == :point
             right = o.right
 
             return collector << "1=0" if unboundable?(right)
